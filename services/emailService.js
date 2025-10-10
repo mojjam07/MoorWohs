@@ -12,14 +12,18 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Verify transporter configuration
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('Email transporter verification failed:', error);
-  } else {
-    console.log('Email transporter is ready to send messages');
-  }
-});
+// Verify transporter configuration only if email user is configured
+if (config.EMAIL_USER) {
+  transporter.verify((error, success) => {
+    if (error) {
+      console.error('Email transporter verification failed:', error);
+    } else {
+      console.log('Email transporter is ready to send messages');
+    }
+  });
+} else {
+  console.log('Email configuration not provided, skipping transporter verification');
+}
 
 // Send email function
 const sendEmail = async (to, subject, html) => {

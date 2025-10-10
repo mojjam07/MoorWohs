@@ -7,7 +7,7 @@ const pool = new Pool({
   database: config.DB_NAME,
   user: config.DB_USER,
   password: config.DB_PASSWORD,
-  ssl: true, // Enable SSL for secure connections (required for Render PostgreSQL)
+  ssl: { rejectUnauthorized: false }, // Accept self-signed certificates (for Render PostgreSQL)
   max: 20, // Maximum number of clients in the pool
   idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
   connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
