@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { getAllProjects, getProjectById, createProject, updateProject, deleteProject } = require('../db/queries');
+const authenticateToken = require('../middleware/auth');
 
 // Get all projects
 router.get('/', async (req, res) => {
   try {
     const { featured } = req.query;
-    const projects = await getAllProjects(featured === 'true');
+    const featuredFilter = featured === 'true' ? true : featured === 'false' ? false : null;
+    const projects = await getAllProjects(featuredFilter);
     res.json(projects);
   } catch (error) {
     console.error('Error fetching projects:', error);
@@ -30,8 +32,8 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Create new project (protected - add authentication in production)
-router.post('/', async (req, res) => {
+// Create new project
+router.post('/', authenticateToken, async (req, res) => {
   try {
     const { title, description, tech, link, image, featured } = req.body;
 
@@ -56,8 +58,8 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Update project (protected - add authentication in production)
-router.put('/:id', async (req, res) => {
+// Update project
+router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const updatedProject = await updateProject(id, req.body);
@@ -73,8 +75,8 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Delete project (protected - add authentication in production)
-router.delete('/:id', async (req, res) => {
+// Delete project
+router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const deletedProject = await deleteProject(id);

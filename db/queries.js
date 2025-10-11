@@ -10,7 +10,7 @@ const getAllProjects = async (featured = null) => {
     values.push(featured);
   }
 
-  query += ' ORDER BY id';
+  query += ' ORDER BY featured DESC, id';
 
   const result = await pool.query(query, values);
   return result.rows;

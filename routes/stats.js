@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getStats } = require('../db/queries');
+const authenticateToken = require('../middleware/auth');
 
 // Get portfolio stats
 router.get('/', async (req, res) => {
