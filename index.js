@@ -17,6 +17,9 @@ const uploadRoutes = require('./routes/uploads');
 
 const app = express();
 
+// Trust proxy for accurate IP detection (required for Render)
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(helmet());
 app.use(cors({
