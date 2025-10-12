@@ -21,7 +21,7 @@ if (process.env.DATABASE_URL) {
 
 const config = {
   PORT: process.env.PORT || 5000,
-  CORS_ORIGINS: ['http://localhost:3000', 'http://localhost:5173', 'https://https://mojeed-rho.vercel.app'],
+  CORS_ORIGINS: ['http://localhost:3000', 'http://localhost:5173', 'https://mojeed-rho.vercel.app'],
   RATE_LIMIT_WINDOW_MS: 15 * 60 * 1000, // 15 minutes
   RATE_LIMIT_MAX_REQUESTS: 100, // limit each IP to 100 requests per windowMs
   CONTACT_RATE_LIMIT_WINDOW_MS: 60 * 60 * 1000, // 1 hour
