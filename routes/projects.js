@@ -61,13 +61,18 @@ router.post('/', authenticateToken, async (req, res) => {
 // Update project
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
+    console.log('PUT /api/projects/:id - Request body:', req.body);
+    console.log('PUT /api/projects/:id - User from token:', req.user);
+
     const id = parseInt(req.params.id);
     const updatedProject = await updateProject(id, req.body);
 
     if (!updatedProject) {
+      console.log('PUT /api/projects/:id - Project not found');
       return res.status(404).json({ error: 'Project not found' });
     }
 
+    console.log('PUT /api/projects/:id - Project updated successfully');
     res.json(updatedProject);
   } catch (error) {
     console.error('Error updating project:', error);
