@@ -57,16 +57,16 @@ let projects = [
 ];
 
 let skills = [
-  // { id: 1, name: 'React.js', level: 90, category: 'frontend' },
-  // { id: 2, name: 'Node.js', level: 85, category: 'backend' },
-  // { id: 3, name: 'TypeScript', level: 80, category: 'frontend' },
-  // { id: 4, name: 'MongoDB', level: 75, category: 'backend' },
-  // { id: 5, name: 'Express.js', level: 88, category: 'backend' },
-  // { id: 6, name: 'Tailwind CSS', level: 92, category: 'frontend' },
-  // { id: 7, name: 'PostgreSQL', level: 78, category: 'backend' },
-  // { id: 8, name: 'Git & GitHub', level: 85, category: 'tools' },
-  // { id: 9, name: 'Docker', level: 70, category: 'tools' },
-  // { id: 10, name: 'AWS', level: 72, category: 'cloud' }
+  // { id: 1, name: 'React.js', category: 'frontend' },
+  // { id: 2, name: 'Node.js', category: 'backend' },
+  // { id: 3, name: 'TypeScript', category: 'frontend' },
+  // { id: 4, name: 'MongoDB', category: 'backend' },
+  // { id: 5, name: 'Express.js', category: 'backend' },
+  // { id: 6, name: 'Tailwind CSS', category: 'frontend' },
+  // { id: 7, name: 'PostgreSQL', category: 'backend' },
+  // { id: 8, name: 'Git & GitHub', category: 'tools' },
+  // { id: 9, name: 'Docker', category: 'tools' },
+  // { id: 10, name: 'AWS', category: 'cloud' }
 ];
 
 let contacts = [];

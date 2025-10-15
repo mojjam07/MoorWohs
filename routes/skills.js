@@ -18,17 +18,13 @@ router.get('/', async (req, res) => {
 // Create new skill
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { name, level, category } = req.body;
+    const { name, category } = req.body;
 
-    if (!name || level === undefined || !category) {
+    if (!name || !category) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    if (level < 0 || level > 100) {
-      return res.status(400).json({ error: 'Level must be between 0 and 100' });
-    }
-
-    const skillData = { name, level, category };
+    const skillData = { name, category };
     const newSkill = await createSkill(skillData);
     res.status(201).json(newSkill);
   } catch (error) {
@@ -41,10 +37,6 @@ router.post('/', authenticateToken, async (req, res) => {
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-
-    if (req.body.level !== undefined && (req.body.level < 0 || req.body.level > 100)) {
-      return res.status(400).json({ error: 'Level must be between 0 and 100' });
-    }
 
     const updatedSkill = await updateSkill(id, req.body);
 

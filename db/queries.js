@@ -95,16 +95,16 @@ const getAllSkills = async (category = null) => {
 };
 
 const createSkill = async (skillData) => {
-  const { name, level, category } = skillData;
+  const { name, category } = skillData;
   const result = await pool.query(
-    'INSERT INTO skills (name, level, category) VALUES ($1, $2, $3) RETURNING *',
-    [name, level, category]
+    'INSERT INTO skills (name, category) VALUES ($1, $2) RETURNING *',
+    [name, category]
   );
   return result.rows[0];
 };
 
 const updateSkill = async (id, skillData) => {
-  const { name, level, category } = skillData;
+  const { name, category } = skillData;
   const setParts = [];
   const values = [];
   let index = 1;
@@ -112,10 +112,6 @@ const updateSkill = async (id, skillData) => {
   if (name !== undefined) {
     setParts.push(`name = $${index++}`);
     values.push(name);
-  }
-  if (level !== undefined) {
-    setParts.push(`level = $${index++}`);
-    values.push(level);
   }
   if (category !== undefined) {
     setParts.push(`category = $${index++}`);

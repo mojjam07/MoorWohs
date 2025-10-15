@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS projects (
 CREATE TABLE IF NOT EXISTS skills (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  level INTEGER NOT NULL CHECK (level >= 0 AND level <= 100),
   category VARCHAR(50) NOT NULL
 );
 
