@@ -1,6 +1,15 @@
-// Parse DATABASE_URL if provided (e.g., from Render)
+// Parse SUPABASE_DATABASE_URL or DATABASE_URL if provided
 let dbConfig = {};
-if (process.env.DATABASE_URL) {
+if (process.env.SUPABASE_DATABASE_URL) {
+  const url = new URL(process.env.SUPABASE_DATABASE_URL);
+  dbConfig = {
+    DB_HOST: url.hostname,
+    DB_PORT: url.port,
+    DB_NAME: url.pathname.slice(1), // Remove leading '/'
+    DB_USER: url.username,
+    DB_PASSWORD: url.password,
+  };
+} else if (process.env.DATABASE_URL) {
   const url = new URL(process.env.DATABASE_URL);
   dbConfig = {
     DB_HOST: url.hostname,

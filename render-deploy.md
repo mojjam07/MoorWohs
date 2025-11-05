@@ -16,14 +16,15 @@ This guide provides step-by-step instructions to deploy the portfolio backend AP
    CORS_ORIGINS: ['http://localhost:3000', 'http://localhost:5173', 'https://your-render-app-url.onrender.com']
    ```
 
-## Step 2: Create a PostgreSQL Database on Render
+## Step 2: Create a PostgreSQL Database on Supabase
 
-1. Log in to your Render dashboard.
-2. Click "New" > "PostgreSQL".
-3. Choose a name for your database (e.g., `portfolio-db`).
-4. Select a region and plan (free tier is available).
-5. Click "Create Database".
-6. Note down the connection details (you'll need the `DATABASE_URL`). 
+1. Sign up for a Supabase account at [supabase.com](https://supabase.com).
+2. Create a new project.
+3. Choose a name for your project (e.g., `portfolio-db`).
+4. Select a region and database password.
+5. Wait for the project to be set up.
+6. Go to Settings > Database in your Supabase dashboard.
+7. Note down the connection details (you'll need the `Connection string` for `SUPABASE_DATABASE_URL`).
 
 ## Step 3: Deploy the Web Service
 
@@ -41,7 +42,7 @@ This guide provides step-by-step instructions to deploy the portfolio backend AP
 In your Render web service settings, add the following environment variables:
 
 ### Database Configuration
-- `DATABASE_URL`: The full connection string from your PostgreSQL database (e.g., `postgresql://user:password@host:port/database`). This is the primary way to configure the database connection on Render.
+- `SUPABASE_DATABASE_URL`: The full connection string from your Supabase PostgreSQL database (e.g., `postgresql://user:password@host:port/database`). This is the primary way to configure the database connection on Render.
 
 ### Authentication
 - `JWT_SECRET`: A secure random string for JWT signing
