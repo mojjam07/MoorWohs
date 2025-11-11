@@ -1,7 +1,6 @@
-const jwt = require('jsonwebtoken');
-const config = require('../config/config');
+const supabase = require('../db/db');
 
-const authenticateToken = (req, res, next) => {
+const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -13,15 +12,19 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ error: 'Access token missing' });
   }
 
-  jwt.verify(token, config.JWT_SECRET, (err, user) => {
-    if (err) {
-      console.log('Auth middleware - Token verification failed:', err.message);
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (error || !user) {
+      console.log('Auth middleware - Token verification failed:', error?.message);
       return res.status(403).json({ error: 'Invalid or expired token' });
     }
     console.log('Auth middleware - Token verified for user:', user.email);
     req.user = user;
     next();
-  });
+  } catch (err) {
+    console.log('Auth middleware - Token verification error:', err.message);
+    return res.status(403).json({ error: 'Invalid or expired token' });
+  }
 };
 
 module.exports = authenticateToken;

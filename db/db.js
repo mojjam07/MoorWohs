@@ -1,25 +1,10 @@
-const { Pool } = require('pg');
+const { createClient } = require('@supabase/supabase-js');
 const config = require('../config/config');
 
-const pool = new Pool({
-  host: config.DB_HOST,
-  port: config.DB_PORT,
-  database: config.DB_NAME,
-  user: config.DB_USER,
-  password: config.DB_PASSWORD,
-  ssl: { rejectUnauthorized: false }, // Accept self-signed certificates (for Render PostgreSQL)
-  max: 20, // Maximum number of clients in the pool
-  idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-  connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
-});
+if (!config.SUPABASE_URL || !config.SUPABASE_ANON_KEY) {
+  throw new Error('SUPABASE_URL and SUPABASE_ANON_KEY must be set in environment variables');
+}
 
-pool.on('connect', (client) => {
-  console.log('New client connected to the database');
-});
+const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
 
-pool.on('error', (err, client) => {
-  console.error('Unexpected error on idle client', err);
-  process.exit(-1);
-});
-
-module.exports = pool;
+module.exports = supabase;

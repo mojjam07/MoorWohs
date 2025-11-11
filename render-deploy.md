@@ -16,15 +16,15 @@ This guide provides step-by-step instructions to deploy the portfolio backend AP
    CORS_ORIGINS: ['http://localhost:3000', 'http://localhost:5173', 'https://your-render-app-url.onrender.com']
    ```
 
-## Step 2: Create a PostgreSQL Database on Supabase
+## Step 2: Create a Supabase Project
 
 1. Sign up for a Supabase account at [supabase.com](https://supabase.com).
 2. Create a new project.
 3. Choose a name for your project (e.g., `portfolio-db`).
 4. Select a region and database password.
 5. Wait for the project to be set up.
-6. Go to Settings > Database in your Supabase dashboard.
-7. Note down the connection details (you'll need the `Connection string` for `SUPABASE_DATABASE_URL`).
+6. Go to Settings > API in your Supabase dashboard.
+7. Note down the `Project URL` and `anon public` key (you'll need these for `SUPABASE_URL` and `SUPABASE_ANON_KEY`).
 
 ## Step 3: Deploy the Web Service
 
@@ -33,7 +33,7 @@ This guide provides step-by-step instructions to deploy the portfolio backend AP
 3. Configure the service:
    - **Name**: Choose a name for your service (e.g., `portfolio-backend`)
    - **Environment**: Node
-   - **Build Command**: `npm install && npm run migrate`
+- **Build Command**: `npm install`
    - **Start Command**: `npm start`
    - **Root Directory**: `backend` (if your backend is in a subdirectory)
 
@@ -41,8 +41,9 @@ This guide provides step-by-step instructions to deploy the portfolio backend AP
 
 In your Render web service settings, add the following environment variables:
 
-### Database Configuration
-- `SUPABASE_DATABASE_URL`: The full connection string from your Supabase PostgreSQL database (e.g., `postgresql://user:password@host:port/database`). This is the primary way to configure the database connection on Render.
+### Supabase Configuration
+- `SUPABASE_URL`: The Project URL from your Supabase project (e.g., `https://your-project-id.supabase.co`)
+- `SUPABASE_ANON_KEY`: The anon public key from your Supabase project
 
 ### Authentication
 - `JWT_SECRET`: A secure random string for JWT signing
@@ -78,9 +79,16 @@ Update your frontend to point to the new backend URL:
 ## Troubleshooting
 
 - **Build Failures**: Check the build logs. Common issues include missing environment variables or database connection problems.
-- **Migration Errors**: Ensure your database is accessible and the schema is correct. If you see connection refused errors, verify that `DATABASE_URL` is set correctly in environment variables. If you see SSL/TLS required errors, the SSL configuration is handled automatically in the code.
+- **Migration Errors**: Ensure your Supabase project is set up correctly and the schema is created. Use the Supabase dashboard to create tables and run migrations.
 - **CORS Issues**: Verify that your Render URL is added to `CORS_ORIGINS` in config.
 - **Port Issues**: Render assigns a port via the `PORT` environment variable, which your app should use.
+
+## Step 7: Create Database Schema in Supabase
+
+1. Go to your Supabase project dashboard.
+2. Navigate to the SQL Editor.
+3. Run the SQL commands from `backend/db/schema.sql` to create your tables.
+4. Optionally, run the migration script from `backend/db/migrate.js` to populate initial data.
 
 ## Additional Notes
 

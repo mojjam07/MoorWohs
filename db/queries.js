@@ -1,228 +1,178 @@
-const pool = require('./db');
+const supabase = require('./db');
 
 // Projects queries
 const getAllProjects = async (featured = null) => {
-  let query = 'SELECT * FROM projects';
-  const values = [];
+  let query = supabase.from('projects').select('*');
 
   if (featured !== null) {
-    query += ' WHERE featured = $1';
-    values.push(featured);
+    query = query.eq('featured', featured);
   }
 
-  query += ' ORDER BY featured DESC, id';
-
-  const result = await pool.query(query, values);
-  return result.rows;
+  const { data, error } = await query.order('featured', { ascending: false }).order('id');
+  if (error) throw error;
+  return data;
 };
 
 const getProjectById = async (id) => {
-  const result = await pool.query('SELECT * FROM projects WHERE id = $1', [id]);
-  return result.rows[0];
+  const { data, error } = await supabase.from('projects').select('*').eq('id', id).single();
+  if (error) throw error;
+  return data;
 };
 
 const createProject = async (projectData) => {
   const { title, description, tech, link, image, featured } = projectData;
-  const result = await pool.query(
-    'INSERT INTO projects (title, description, tech, link, image, featured) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-    [title, description, JSON.stringify(tech), link, image, featured]
-  );
-  return result.rows[0];
+  const { data, error } = await supabase
+    .from('projects')
+    .insert([{ title, description, tech, link, image, featured }])
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 };
 
 const updateProject = async (id, projectData) => {
   const { title, description, tech, link, image, featured } = projectData;
-  const setParts = [];
-  const values = [];
-  let index = 1;
+  const updateData = {};
+  if (title !== undefined) updateData.title = title;
+  if (description !== undefined) updateData.description = description;
+  if (tech !== undefined) updateData.tech = tech;
+  if (link !== undefined) updateData.link = link;
+  if (image !== undefined) updateData.image = image;
+  if (featured !== undefined) updateData.featured = featured;
 
-  if (title !== undefined) {
-    setParts.push(`title = $${index++}`);
-    values.push(title);
-  }
-  if (description !== undefined) {
-    setParts.push(`description = $${index++}`);
-    values.push(description);
-  }
-  if (tech !== undefined) {
-    setParts.push(`tech = $${index++}`);
-    values.push(JSON.stringify(tech));
-  }
-  if (link !== undefined) {
-    setParts.push(`link = $${index++}`);
-    values.push(link);
-  }
-  if (image !== undefined) {
-    setParts.push(`image = $${index++}`);
-    values.push(image);
-  }
-  if (featured !== undefined) {
-    setParts.push(`featured = $${index++}`);
-    values.push(featured);
-  }
-
-  if (setParts.length === 0) {
+  if (Object.keys(updateData).length === 0) {
     // No fields to update, just return the current project
     return await getProjectById(id);
   }
 
-  const query = `UPDATE projects SET ${setParts.join(', ')} WHERE id = $${index} RETURNING *`;
-  values.push(id);
-
-  const result = await pool.query(query, values);
-  return result.rows[0];
+  const { data, error } = await supabase
+    .from('projects')
+    .update(updateData)
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 };
 
 const deleteProject = async (id) => {
-  const result = await pool.query('DELETE FROM projects WHERE id = $1 RETURNING *', [id]);
-  return result.rows[0];
+  const { data, error } = await supabase.from('projects').delete().eq('id', id).select().single();
+  if (error) throw error;
+  return data;
 };
 
 // Skills queries
 const getAllSkills = async (category = null) => {
-  let query = 'SELECT * FROM skills';
-  const values = [];
+  let query = supabase.from('skills').select('*');
 
   if (category) {
-    query += ' WHERE category = $1';
-    values.push(category);
+    query = query.eq('category', category);
   }
 
-  query += ' ORDER BY id';
-
-  const result = await pool.query(query, values);
-  return result.rows;
+  const { data, error } = await query.order('id');
+  if (error) throw error;
+  return data;
 };
 
 const createSkill = async (skillData) => {
   const { name, category } = skillData;
-  const result = await pool.query(
-    'INSERT INTO skills (name, category) VALUES ($1, $2) RETURNING *',
-    [name, category]
-  );
-  return result.rows[0];
+  const { data, error } = await supabase
+    .from('skills')
+    .insert([{ name, category }])
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 };
 
 const updateSkill = async (id, skillData) => {
   const { name, category } = skillData;
-  const setParts = [];
-  const values = [];
-  let index = 1;
+  const updateData = {};
+  if (name !== undefined) updateData.name = name;
+  if (category !== undefined) updateData.category = category;
 
-  if (name !== undefined) {
-    setParts.push(`name = $${index++}`);
-    values.push(name);
-  }
-  if (category !== undefined) {
-    setParts.push(`category = $${index++}`);
-    values.push(category);
-  }
-
-  if (setParts.length === 0) {
+  if (Object.keys(updateData).length === 0) {
     // No fields to update, just return the current skill
-    const result = await pool.query('SELECT * FROM skills WHERE id = $1', [id]);
-    return result.rows[0];
+    const { data, error } = await supabase.from('skills').select('*').eq('id', id).single();
+    if (error) throw error;
+    return data;
   }
 
-  const query = `UPDATE skills SET ${setParts.join(', ')} WHERE id = $${index} RETURNING *`;
-  values.push(id);
-
-  const result = await pool.query(query, values);
-  return result.rows[0];
+  const { data, error } = await supabase
+    .from('skills')
+    .update(updateData)
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 };
 
 const deleteSkill = async (id) => {
-  const result = await pool.query('DELETE FROM skills WHERE id = $1 RETURNING *', [id]);
-  return result.rows[0];
+  const { data, error } = await supabase.from('skills').delete().eq('id', id).select().single();
+  if (error) throw error;
+  return data;
 };
 
 // Contacts queries
 const createContact = async (contactData) => {
   const { name, email, message } = contactData;
-  const result = await pool.query(
-    'INSERT INTO contacts (name, email, message) VALUES ($1, $2, $3) RETURNING *',
-    [name, email, message]
-  );
-  return result.rows[0];
+  const { data, error } = await supabase
+    .from('contacts')
+    .insert([{ name, email, message }])
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 };
 
 const getAllContacts = async () => {
-  const result = await pool.query('SELECT * FROM contacts ORDER BY timestamp DESC');
-  return result.rows;
+  const { data, error } = await supabase.from('contacts').select('*').order('timestamp', { ascending: false });
+  if (error) throw error;
+  return data;
 };
 
 const markContactAsRead = async (id) => {
-  const result = await pool.query(
-    'UPDATE contacts SET read = true WHERE id = $1 RETURNING *',
-    [id]
-  );
-  return result.rows[0];
+  const { data, error } = await supabase
+    .from('contacts')
+    .update({ read: true })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 };
 
 // Stats queries
 const getStats = async () => {
   const [totalProjectsResult, featuredProjectsResult, totalSkillsResult, skillsByCategoryResult, totalContactsResult, unreadContactsResult] = await Promise.all([
-    pool.query('SELECT COUNT(*) as count FROM projects'),
-    pool.query('SELECT COUNT(*) as count FROM projects WHERE featured = true'),
-    pool.query('SELECT COUNT(*) as count FROM skills'),
-    pool.query("SELECT category, COUNT(*) as count FROM skills GROUP BY category"),
-    pool.query('SELECT COUNT(*) as count FROM contacts'),
-    pool.query('SELECT COUNT(*) as count FROM contacts WHERE read = false')
+    supabase.from('projects').select('*', { count: 'exact', head: true }),
+    supabase.from('projects').select('*', { count: 'exact', head: true }).eq('featured', true),
+    supabase.from('skills').select('*', { count: 'exact', head: true }),
+    supabase.rpc('get_skills_by_category'),
+    supabase.from('contacts').select('*', { count: 'exact', head: true }),
+    supabase.from('contacts').select('*', { count: 'exact', head: true }).eq('read', false)
   ]);
 
   const skillsByCategory = {};
-  skillsByCategoryResult.rows.forEach(row => {
-    skillsByCategory[row.category] = parseInt(row.count);
-  });
+  if (skillsByCategoryResult.data) {
+    skillsByCategoryResult.data.forEach(row => {
+      skillsByCategory[row.category] = parseInt(row.count);
+    });
+  }
 
   return {
-    totalProjects: parseInt(totalProjectsResult.rows[0].count),
-    featuredProjects: parseInt(featuredProjectsResult.rows[0].count),
-    totalSkills: parseInt(totalSkillsResult.rows[0].count),
+    totalProjects: totalProjectsResult.count || 0,
+    featuredProjects: featuredProjectsResult.count || 0,
+    totalSkills: totalSkillsResult.count || 0,
     skillsByCategory,
-    totalContacts: parseInt(totalContactsResult.rows[0].count),
-    unreadContacts: parseInt(unreadContactsResult.rows[0].count)
+    totalContacts: totalContactsResult.count || 0,
+    unreadContacts: unreadContactsResult.count || 0
   };
 };
 
-// User queries
-const createUser = async (userData) => {
-  const { email, passwordHash } = userData;
-  const result = await pool.query(
-    'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING *',
-    [email, passwordHash]
-  );
-  return result.rows[0];
-};
-
-const getUserByEmail = async (email) => {
-  const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-  return result.rows[0];
-};
-
-// Refresh token queries
-const createRefreshToken = async (userId, token, expiresAt) => {
-  const result = await pool.query(
-    'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3) RETURNING *',
-    [userId, token, expiresAt]
-  );
-  return result.rows[0];
-};
-
-const getRefreshToken = async (token) => {
-  const result = await pool.query('SELECT * FROM refresh_tokens WHERE token = $1', [token]);
-  return result.rows[0];
-};
-
-const deleteRefreshToken = async (token) => {
-  const result = await pool.query('DELETE FROM refresh_tokens WHERE token = $1 RETURNING *', [token]);
-  return result.rows[0];
-};
-
-const deleteRefreshTokensByUserId = async (userId) => {
-  const result = await pool.query('DELETE FROM refresh_tokens WHERE user_id = $1', [userId]);
-  return result.rowCount;
-};
+// Note: User and refresh token queries are removed as Supabase handles auth internally
+// These functions are kept for compatibility but will not be used with Supabase auth
 
 module.exports = {
   getAllProjects,
@@ -237,11 +187,5 @@ module.exports = {
   createContact,
   getAllContacts,
   markContactAsRead,
-  getStats,
-  createUser,
-  getUserByEmail,
-  createRefreshToken,
-  getRefreshToken,
-  deleteRefreshToken,
-  deleteRefreshTokensByUserId
+  getStats
 };

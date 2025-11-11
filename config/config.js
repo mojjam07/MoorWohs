@@ -36,8 +36,9 @@ const config = {
   CONTACT_RATE_LIMIT_WINDOW_MS: 60 * 60 * 1000, // 1 hour
   CONTACT_RATE_LIMIT_MAX_REQUESTS: 5, // limit each IP to 5 contact submissions per hour
   ...dbConfig,
-  JWT_SECRET: process.env.JWT_SECRET || 'your-secret-key-change-in-production',
-  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key-change-in-production',
+  // Supabase configuration
+  SUPABASE_URL: process.env.SUPABASE_URL,
+  SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
   // Email configuration
   EMAIL_HOST: process.env.EMAIL_HOST || 'smtp.gmail.com',
   EMAIL_PORT: process.env.EMAIL_PORT || 587,
