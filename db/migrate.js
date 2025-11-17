@@ -1,25 +1,40 @@
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const pool = require('./db');
+const { Pool } = require('pg');
+const config = require('../config/config');
 const { projects: projectData, skills: skillData } = require('../data/data.backup');
 const { createProject, createSkill } = require('./queries');
+
+// Create a direct PostgreSQL connection pool for schema creation
+const pool = new Pool({
+  host: config.DB_HOST,
+  port: config.DB_PORT,
+  database: config.DB_NAME,
+  user: config.DB_USER,
+  password: config.DB_PASSWORD,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+});
 
 async function migrate() {
   try {
     console.log('Starting database migration...');
 
-    // Create tables from schema.sql
-    console.log('Creating tables from schema.sql...');
-    const schemaPath = path.join(__dirname, 'schema.sql');
-    const schemaSQL = fs.readFileSync(schemaPath, 'utf8');
+    // Create tables using schema.sql
+    console.log('Creating database tables...');
+    const schemaSQL = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
     await pool.query(schemaSQL);
-    console.log('Tables created successfully!');
+    console.log('Tables created successfully.');
 
     // Migrate projects
     console.log('Migrating projects...');
     for (const project of projectData) {
       const { id, ...projectWithoutId } = project; // Omit id to let DB assign
-      await createProject(projectWithoutId);
+      const { title, description, tech, link, image, featured } = projectWithoutId;
+      await pool.query(
+        'INSERT INTO projects (title, description, tech, link, image, featured) VALUES ($1, $2, $3, $4, $5, $6)',
+        [title, description, JSON.stringify(tech), link, image, featured]
+      );
       console.log(`Migrated project: ${project.title}`);
     }
 
@@ -27,7 +42,11 @@ async function migrate() {
     console.log('Migrating skills...');
     for (const skill of skillData) {
       const { id, ...skillWithoutId } = skill; // Omit id
-      await createSkill(skillWithoutId);
+      const { name, category } = skillWithoutId;
+      await pool.query(
+        'INSERT INTO skills (name, category) VALUES ($1, $2)',
+        [name, category]
+      );
       console.log(`Migrated skill: ${skill.name}`);
     }
 
@@ -37,6 +56,8 @@ async function migrate() {
   } catch (error) {
     console.error('Migration failed:', error);
     process.exit(1);
+  } finally {
+    await pool.end();
   }
 }
 
