@@ -2,19 +2,17 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const { Pool } = require('pg');
-const config = require('../config/config');
+const { parse } = require('pg-connection-string');
 const { projects: projectData, skills: skillData } = require('../data/data.backup');
 const { createProject, createSkill } = require('./queries');
 
-// Create a direct PostgreSQL connection pool for schema creation
+const config = parse(process.env.DATABASE_URL);
+config.ssl = { rejectUnauthorized: false };
+
+// Remove IPv6 hints
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  },
-  // Force IPv4
-  host: 'db.mzrprymhmguhcsoagmnu.supabase.co',
-  family: 4  // This forces IPv4
+  ...config,
+  host: config.host?.replace(/\[.*\]/, config.host) // Remove IPv6 brackets if present
 });
 
 async function migrate() {
