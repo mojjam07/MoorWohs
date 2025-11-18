@@ -8,12 +8,13 @@ const { createProject, createSkill } = require('./queries');
 
 // Create a direct PostgreSQL connection pool for schema creation
 const pool = new Pool({
-  host: config.DB_HOST,
-  port: config.DB_PORT,
-  database: config.DB_NAME,
-  user: config.DB_USER,
-  password: config.DB_PASSWORD,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  },
+  // Force IPv4
+  host: 'db.mzrprymhmguhcsoagmnu.supabase.co',
+  family: 4  // This forces IPv4
 });
 
 async function migrate() {
