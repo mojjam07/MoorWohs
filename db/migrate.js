@@ -19,6 +19,11 @@ async function migrate() {
   try {
     console.log('Starting database migration...');
 
+    // Test connection first
+    console.log('Testing database connection...');
+    await pool.query('SELECT 1');
+    console.log('Database connection successful.');
+
     // Create tables using schema.sql
     console.log('Creating database tables...');
     const schemaSQL = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');

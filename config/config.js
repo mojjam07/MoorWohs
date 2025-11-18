@@ -3,7 +3,7 @@ let dbConfig = {};
 if (process.env.SUPABASE_DATABASE_URL) {
   const url = new URL(process.env.SUPABASE_DATABASE_URL);
   dbConfig = {
-    DB_HOST: url.hostname,
+    DB_HOST: url.hostname.replace(/^\[|\]$/g, ''), // Strip IPv6 brackets
     DB_PORT: url.port,
     DB_NAME: url.pathname.slice(1), // Remove leading '/'
     DB_USER: url.username,
@@ -12,7 +12,7 @@ if (process.env.SUPABASE_DATABASE_URL) {
 } else if (process.env.DATABASE_URL) {
   const url = new URL(process.env.DATABASE_URL);
   dbConfig = {
-    DB_HOST: url.hostname,
+    DB_HOST: url.hostname.replace(/^\[|\]$/g, ''), // Strip IPv6 brackets
     DB_PORT: url.port,
     DB_NAME: url.pathname.slice(1), // Remove leading '/'
     DB_USER: url.username,
