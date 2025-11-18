@@ -9,10 +9,10 @@ const { createProject, createSkill } = require('./queries');
 const config = parse(process.env.DATABASE_URL);
 config.ssl = { rejectUnauthorized: false };
 
-// Remove IPv6 hints
+// Force IPv4 to avoid ENETUNREACH errors with IPv6 addresses on some environments
 const pool = new Pool({
   ...config,
-  host: config.host?.replace(/\[.*\]/, config.host) // Remove IPv6 brackets if present
+  family: 4 // Explicitly use IPv4
 });
 
 async function migrate() {
