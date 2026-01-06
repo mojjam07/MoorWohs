@@ -3,15 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
-    "start": "node index.js",
+    "build": "npm install",
     "migrate": "node db/migrate.js",
+    "start": "npm run migrate && node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "@supabase/supabase-js": "^2.80.0",
     "cloudinary": "^1.41.3",
@@ -25,5 +26,8 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^7.0.9",
     "pg": "^8.11.3"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
