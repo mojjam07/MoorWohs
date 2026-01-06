@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { Pool } = require('pg');
 const { parse } = require('pg-connection-string');
+const dns = require('dns').promises;
 const { projects: projectData, skills: skillData } = require('../data/data.backup');
 const { createProject, createSkill } = require('./queries');
 
@@ -23,62 +24,65 @@ if (!databaseUrl) {
 const config = parse(databaseUrl);
 config.ssl = { rejectUnauthorized: false };
 
-// Force IPv4 by using dns.resolve4 or by modifying the host
 // Remove IPv6 brackets if present and ensure we're using hostname correctly
 if (config.host) {
   config.host = config.host.replace(/^\[|\]$/g, '');
 }
 
-// Force IPv4 to avoid ENETUNREACH errors with IPv6 addresses on some environments
-const pool = new Pool({
-  user: config.user,
-  password: config.password,
-  host: config.host,
-  port: config.port,
-  database: config.database,
-  ssl: config.ssl,
-  // These options help force IPv4 resolution
-  connectionTimeoutMillis: 10000,
-  // Try to disable IPv6 by using Node's net module family option
-  options: '-c search_path=public'
-});
+let pool;
 
-// Override the Pool's connect method to force IPv4 DNS resolution
-const originalConnect = pool.connect.bind(pool);
-pool.connect = async function() {
-  const dns = require('dns').promises;
-  
-  // Try to resolve to IPv4 only
-  if (config.host && !config.host.match(/^\d+\.\d+\.\d+\.\d+$/)) {
-    try {
-      const addresses = await dns.resolve4(config.host);
-      if (addresses && addresses.length > 0) {
-        // Temporarily override the host with the IPv4 address
-        const tempPool = new Pool({
-          user: config.user,
-          password: config.password,
-          host: addresses[0], // Use the first IPv4 address
-          port: config.port,
-          database: config.database,
-          ssl: config.ssl,
-          connectionTimeoutMillis: 10000
-        });
-        return tempPool.connect();
-      }
-    } catch (err) {
-      console.warn('Failed to resolve IPv4 address, falling back to original host:', err.message);
+// Function to resolve hostname to IPv4 address
+async function resolveToIPv4(hostname) {
+  // If it's already an IP address, return as-is
+  if (hostname.match(/^\d+\.\d+\.\d+\.\d+$/)) {
+    return hostname;
+  }
+
+  try {
+    console.log(`Resolving hostname to IPv4: ${hostname}`);
+    const addresses = await dns.resolve4(hostname);
+    if (addresses && addresses.length > 0) {
+      console.log(`Resolved ${hostname} to IPv4: ${addresses[0]}`);
+      return addresses[0];
     }
+  } catch (err) {
+    console.warn(`Failed to resolve ${hostname} to IPv4: ${err.message}`);
   }
   
-  return originalConnect();
-};
+  // Fallback to original hostname if DNS resolution fails
+  return hostname;
+}
+
+// Create pool with IPv4 resolution
+async function createPool() {
+  // Resolve hostname to IPv4 first to avoid IPv6 issues
+  const resolvedHost = await resolveToIPv4(config.host);
+  
+  pool = new Pool({
+    user: config.user,
+    password: config.password,
+    host: resolvedHost,
+    port: config.port,
+    database: config.database,
+    ssl: config.ssl,
+    connectionTimeoutMillis: 15000,
+    idleTimeoutMillis: 30000,
+    options: '-c search_path=public'
+  });
+  
+  return pool;
+}
 
 async function migrate() {
   try {
     console.log('Starting database migration...');
     console.log('Database host:', config.host);
 
-    // Test connection first
+    // Create pool with IPv4 resolution
+    console.log('Creating database connection...');
+    await createPool();
+
+    // Test connection
     console.log('Testing database connection...');
     await pool.query('SELECT 1');
     console.log('Database connection successful.');
