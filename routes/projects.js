@@ -35,7 +35,7 @@ router.get('/:id', async (req, res) => {
 // Create new project
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { title, description, tech, link, image, featured } = req.body;
+    const { title, description, tech, link, github_link, image, featured } = req.body;
 
     if (!title || !description || !tech) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -46,6 +46,7 @@ router.post('/', authenticateToken, async (req, res) => {
       description,
       tech,
       link: link || '#',
+      github_link: github_link || null,
       image: image || null,
       featured: featured || false
     };

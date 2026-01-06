@@ -28,10 +28,10 @@ const getProjectById = async (id) => {
 };
 
 const createProject = async (projectData) => {
-  const { title, description, tech, link, image, featured } = projectData;
+  const { title, description, tech, link, github_link, image, featured } = projectData;
   const { data, error } = await supabase
     .from('projects')
-    .insert([{ title, description, tech, link, image, featured }])
+    .insert([{ title, description, tech, link, github_link, image, featured }])
     .select()
     .single();
   if (error) throw error;

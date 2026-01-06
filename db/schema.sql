@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS projects (
   description TEXT,
   tech JSONB,
   link VARCHAR(500),
+  github_link VARCHAR(500),
   image VARCHAR(500),
   featured BOOLEAN DEFAULT FALSE
 );
