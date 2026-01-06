@@ -6,7 +6,21 @@ const { parse } = require('pg-connection-string');
 const { projects: projectData, skills: skillData } = require('../data/data.backup');
 const { createProject, createSkill } = require('./queries');
 
-const config = parse(process.env.DATABASE_URL);
+// Check for SUPABASE_DATABASE_URL first, then fall back to DATABASE_URL
+const databaseUrl = process.env.SUPABASE_DATABASE_URL || process.env.DATABASE_URL;
+
+// Validate that we have a database URL
+if (!databaseUrl) {
+  console.error('Error: No database URL provided.');
+  console.error('Please set either SUPABASE_DATABASE_URL or DATABASE_URL environment variable.');
+  console.error('Example:');
+  console.error('  SUPABASE_DATABASE_URL=postgres://user:pass@host:5432/db');
+  console.error('  or');
+  console.error('  DATABASE_URL=postgres://user:pass@host:5432/db');
+  process.exit(1);
+}
+
+const config = parse(databaseUrl);
 config.ssl = { rejectUnauthorized: false };
 
 // Force IPv4 by using dns.resolve4 or by modifying the host

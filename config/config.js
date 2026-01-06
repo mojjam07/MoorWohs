@@ -28,9 +28,23 @@ if (process.env.SUPABASE_DATABASE_URL) {
   };
 }
 
+// Helper to check if origin is allowed
+const isAllowedOrigin = (origin) => {
+  const allowedPatterns = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://mojeed-rho.vercel.app',
+    /\.vercel\.app$/, // Allow any Vercel deployment
+  ];
+  
+  return allowedPatterns.some(pattern => 
+    typeof pattern === 'string' ? pattern === origin : pattern.test(origin)
+  );
+};
+
 const config = {
   PORT: process.env.PORT || 5000,
-  CORS_ORIGINS: ['http://localhost:3000', 'http://localhost:5173', 'https://mojeed-rho.vercel.app'],
+  CORS_ORIGINS: isAllowedOrigin, // Use function for dynamic origin checking
   RATE_LIMIT_WINDOW_MS: 15 * 60 * 1000, // 15 minutes
   RATE_LIMIT_MAX_REQUESTS: 100, // limit each IP to 100 requests per windowMs
   CONTACT_RATE_LIMIT_WINDOW_MS: 60 * 60 * 1000, // 1 hour

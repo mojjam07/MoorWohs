@@ -41,6 +41,11 @@ This guide provides step-by-step instructions to deploy the portfolio backend AP
 
 In your Render web service settings, add the following environment variables:
 
+### Database Configuration (REQUIRED for migration)
+- `SUPABASE_DATABASE_URL`: Your Supabase connection string (e.g., `postgres://user:password@host:5432/db`)
+  - Get this from Supabase Settings > Database > Connection string
+  - Replace `[PASSWORD]` with your actual database password
+
 ### Supabase Configuration
 - `SUPABASE_URL`: The Project URL from your Supabase project (e.g., `https://your-project-id.supabase.co`)
 - `SUPABASE_ANON_KEY`: The anon public key from your Supabase project
