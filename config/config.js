@@ -36,15 +36,29 @@ const isAllowedOrigin = (origin) => {
     'https://mojeed-rho.vercel.app',
     /\.vercel\.app$/, // Allow any Vercel deployment
   ];
-  
-  return allowedPatterns.some(pattern => 
+
+  return allowedPatterns.some(pattern =>
     typeof pattern === 'string' ? pattern === origin : pattern.test(origin)
   );
 };
 
+// CORS callback function for cors middleware (required signature: origin, callback)
+const corsOptionsDelegate = (origin, callback) => {
+  // Allow requests with no origin (like mobile apps or curl requests)
+  if (!origin) {
+    return callback(null, true);
+  }
+
+  if (isAllowedOrigin(origin)) {
+    callback(null, true);
+  } else {
+    callback(new Error('Not allowed by CORS'));
+  }
+};
+
 const config = {
   PORT: process.env.PORT || 5000,
-  CORS_ORIGINS: isAllowedOrigin, // Use function for dynamic origin checking
+  CORS_ORIGINS: corsOptionsDelegate, // Use callback format for cors middleware
   RATE_LIMIT_WINDOW_MS: 15 * 60 * 1000, // 15 minutes
   RATE_LIMIT_MAX_REQUESTS: 100, // limit each IP to 100 requests per windowMs
   CONTACT_RATE_LIMIT_WINDOW_MS: 60 * 60 * 1000, // 1 hour
