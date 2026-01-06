@@ -15,6 +15,7 @@ const skillRoutes = require('./routes/skills');
 const contactRoutes = require('./routes/contacts');
 const statRoutes = require('./routes/stats');
 const uploadRoutes = require('./routes/uploads');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
@@ -38,11 +39,10 @@ app.use('/api/', limiter);
 app.use('/api/health', healthRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/skills', skillRoutes);
-app.use('/api/contact', contactLimiter, contactRoutes); // Apply stricter limit to contact POST
-app.use('/api/contacts', contactRoutes); // Admin routes for contacts
+app.use('/api/contact', contactLimiter, contactRoutes);
+app.use('/api/contacts', contactRoutes); // Admin routes
 app.use('/api/stats', statRoutes);
 app.use('/api/uploads', uploadRoutes);
-const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 
 // 404 handler
@@ -56,13 +56,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Start server
-app.listen(config.PORT, () => {
-  console.log(`🚀 Portfolio API Server running on port ${config.PORT}`);
-  console.log(`📊 Health check: http://localhost:${config.PORT}/api/health`);
-  console.log(`💼 Projects API: http://localhost:${config.PORT}/api/projects`);
-  console.log(`🎯 Skills API: http://localhost:${config.PORT}/api/skills`);
-  console.log(`📧 Contact API: http://localhost:${config.PORT}/api/contact`);
+// ✅ Use Render-assigned port
+const PORT = process.env.PORT || config.PORT || 10000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Portfolio API Server running on port ${PORT}`);
+  console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+  console.log(`💼 Projects API: http://localhost:${PORT}/api/projects`);
+  console.log(`🎯 Skills API: http://localhost:${PORT}/api/skills`);
+  console.log(`📧 Contact API: http://localhost:${PORT}/api/contact`);
 });
 
 module.exports = app;
