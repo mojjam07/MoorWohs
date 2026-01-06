@@ -84,7 +84,7 @@ app.use((err, req, res, next) => {
 
 // ✅ Use Render-assigned port
 const PORT = process.env.PORT || config.PORT || 10000;
-const API_URL = process.env.API_URL || `http://localhost:${PORT}/api`;
+const API_URL = process.env.API_URL || `http://localhost:${PORT}`;
 
 app.listen(PORT, () => {
   console.log(`🚀 Portfolio API Server running on port ${PORT}`);
