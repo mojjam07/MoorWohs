@@ -84,14 +84,19 @@ app.use((err, req, res, next) => {
 
 // ✅ Use Render-assigned port
 const PORT = process.env.PORT || config.PORT || 10000;
-const API_URL = process.env.API_URL || `http://localhost`;
+
+// Dynamically set API_URL based on environment
+const API_URL = process.env.API_URL ||
+  (process.env.NODE_ENV === 'production'
+    ? (process.env.DEPLOYED_BACKEND_URL || 'https://moorwohs.onrender.com')
+    : `http://localhost:${PORT}`);
 
 app.listen(PORT, () => {
   console.log(`🚀 Portfolio API Server running on port ${PORT}`);
-  console.log(`📊 Health check: ${API_URL}:${PORT}/api/health`);
-  console.log(`💼 Projects API: ${API_URL}:${PORT}/api/projects`);
-  console.log(`🎯 Skills API: ${API_URL}:${PORT}/api/skills`);
-  console.log(`📧 Contact API: ${API_URL}:${PORT}/api/contact`);
+  console.log(`📊 Health check: ${API_URL}/api/health`);
+  console.log(`💼 Projects API: ${API_URL}/api/projects`);
+  console.log(`🎯 Skills API: ${API_URL}/api/skills`);
+  console.log(`📧 Contact API: ${API_URL}/api/contact`);
 });
 
 module.exports = app;

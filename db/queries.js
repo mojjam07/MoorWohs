@@ -1,4 +1,4 @@
-const supabase = require('./db');
+const { supabase, supabaseAdmin } = require('./db');
 const { projects, skills, contacts } = require('../data/data');
 
 // Projects queries
@@ -29,7 +29,7 @@ const getProjectById = async (id) => {
 
 const createProject = async (projectData) => {
   const { title, description, tech, link, github_link, image, featured } = projectData;
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('projects')
     .insert([{ title, description, tech, link, github_link, image, featured }])
     .select()
@@ -54,7 +54,7 @@ const updateProject = async (id, projectData) => {
     return await getProjectById(id);
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('projects')
     .update(updateData)
     .eq('id', id)
@@ -65,7 +65,7 @@ const updateProject = async (id, projectData) => {
 };
 
 const deleteProject = async (id) => {
-  const { data, error } = await supabase.from('projects').delete().eq('id', id).select().single();
+  const { data, error } = await supabaseAdmin.from('projects').delete().eq('id', id).select().single();
   if (error) throw error;
   return data;
 };
@@ -92,7 +92,7 @@ const getAllSkills = async (category = null) => {
 
 const createSkill = async (skillData) => {
   const { name, category } = skillData;
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('skills')
     .insert([{ name, category }])
     .select()
@@ -109,12 +109,12 @@ const updateSkill = async (id, skillData) => {
 
   if (Object.keys(updateData).length === 0) {
     // No fields to update, just return the current skill
-    const { data, error } = await supabase.from('skills').select('*').eq('id', id).single();
+    const { data, error } = await supabaseAdmin.from('skills').select('*').eq('id', id).single();
     if (error) throw error;
     return data;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('skills')
     .update(updateData)
     .eq('id', id)
@@ -125,7 +125,7 @@ const updateSkill = async (id, skillData) => {
 };
 
 const deleteSkill = async (id) => {
-  const { data, error } = await supabase.from('skills').delete().eq('id', id).select().single();
+  const { data, error } = await supabaseAdmin.from('skills').delete().eq('id', id).select().single();
   if (error) throw error;
   return data;
 };
@@ -135,7 +135,7 @@ const createContact = async (contactData) => {
   const { name, email, message } = contactData;
   // Fallback to in-memory data if Supabase fails
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('contacts')
       .insert([{ name, email, message }])
       .select()
@@ -160,7 +160,7 @@ const createContact = async (contactData) => {
 const getAllContacts = async () => {
   // Fallback to in-memory data if Supabase fails
   try {
-    const { data, error } = await supabase.from('contacts').select('*').order('timestamp', { ascending: false });
+    const { data, error } = await supabaseAdmin.from('contacts').select('*').order('timestamp', { ascending: false });
     if (error) throw error;
     return data;
   } catch (error) {
@@ -172,7 +172,7 @@ const getAllContacts = async () => {
 const markContactAsRead = async (id) => {
   // Fallback to in-memory data if Supabase fails
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('contacts')
       .update({ read: true })
       .eq('id', id)
@@ -196,12 +196,12 @@ const getStats = async () => {
   // Fallback to in-memory data if Supabase fails
   try {
     const [totalProjectsResult, featuredProjectsResult, totalSkillsResult, skillsByCategoryResult, totalContactsResult, unreadContactsResult] = await Promise.all([
-      supabase.from('projects').select('*', { count: 'exact', head: true }),
-      supabase.from('projects').select('*', { count: 'exact', head: true }).eq('featured', true),
-      supabase.from('skills').select('*', { count: 'exact', head: true }),
-      supabase.rpc('get_skills_by_category'),
-      supabase.from('contacts').select('*', { count: 'exact', head: true }),
-      supabase.from('contacts').select('*', { count: 'exact', head: true }).eq('read', false)
+      supabaseAdmin.from('projects').select('*', { count: 'exact', head: true }),
+      supabaseAdmin.from('projects').select('*', { count: 'exact', head: true }).eq('featured', true),
+      supabaseAdmin.from('skills').select('*', { count: 'exact', head: true }),
+      supabaseAdmin.rpc('get_skills_by_category'),
+      supabaseAdmin.from('contacts').select('*', { count: 'exact', head: true }),
+      supabaseAdmin.from('contacts').select('*', { count: 'exact', head: true }).eq('read', false)
     ]);
 
     const skillsByCategory = {};
