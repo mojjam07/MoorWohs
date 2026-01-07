@@ -37,6 +37,9 @@ router.post('/', authenticateToken, async (req, res) => {
   try {
     const { title, description, tech, link, github_link, image, featured } = req.body;
 
+    console.log('POST /api/projects - Request body:', req.body);
+    console.log('POST /api/projects - User from token:', req.user?.email);
+
     if (!title || !description || !tech) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -51,11 +54,22 @@ router.post('/', authenticateToken, async (req, res) => {
       featured: featured || false
     };
 
+    console.log('POST /api/projects - Creating project with data:', projectData);
+
     const newProject = await createProject(projectData);
+    console.log('POST /api/projects - Project created successfully:', newProject?.id);
     res.status(201).json(newProject);
   } catch (error) {
     console.error('Error creating project:', error);
-    res.status(500).json({ error: 'Failed to create project' });
+    console.error('Error message:', error.message);
+    console.error('Error code:', error.code);
+    console.error('Error details:', error.details);
+    
+    // Return more detailed error for debugging
+    res.status(500).json({ 
+      error: 'Failed to create project',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 

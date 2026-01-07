@@ -29,13 +29,32 @@ const getProjectById = async (id) => {
 
 const createProject = async (projectData) => {
   const { title, description, tech, link, github_link, image, featured } = projectData;
-  const { data, error } = await supabaseAdmin
-    .from('projects')
-    .insert([{ title, description, tech, link, github_link, image, featured }])
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
+  
+  console.log('createProject - Inserting with supabaseAdmin');
+  console.log('createProject - Project data:', { title, description, tech, link, github_link, image, featured });
+  
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('projects')
+      .insert([{ title, description, tech, link, github_link, image, featured }])
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('createProject - Supabase error:', error);
+      console.error('createProject - Error code:', error.code);
+      console.error('createProject - Error message:', error.message);
+      console.error('createProject - Error details:', error.details);
+      throw error;
+    }
+    
+    console.log('createProject - Success, created project ID:', data?.id);
+    return data;
+  } catch (err) {
+    console.error('createProject - Exception:', err.message);
+    console.error('createProject - Full error:', err);
+    throw err;
+  }
 };
 
 const updateProject = async (id, projectData) => {
