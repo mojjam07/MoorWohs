@@ -44,14 +44,14 @@ async function migrate() {
 
     // Idempotent project inserts
     for (const project of projectData) {
-      const { title, description, tech, link, image, featured } = project;
+      const { title, description, tech, link, github_link, image, featured } = project;
       await pool.query(
         `
-        INSERT INTO projects (title, description, tech, link, image, featured)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO projects (title, description, tech, link, github_link, image, featured)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
         ON CONFLICT (title) DO NOTHING
         `,
-        [title, description, JSON.stringify(tech), link, image, featured]
+        [title, description, JSON.stringify(tech), link, github_link || null, image, featured]
       );
     }
 

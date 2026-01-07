@@ -39,12 +39,13 @@ const createProject = async (projectData) => {
 };
 
 const updateProject = async (id, projectData) => {
-  const { title, description, tech, link, image, featured } = projectData;
+  const { title, description, tech, link, github_link, image, featured } = projectData;
   const updateData = {};
   if (title !== undefined) updateData.title = title;
   if (description !== undefined) updateData.description = description;
   if (tech !== undefined) updateData.tech = tech;
   if (link !== undefined) updateData.link = link;
+  if (github_link !== undefined) updateData.github_link = github_link;
   if (image !== undefined) updateData.image = image;
   if (featured !== undefined) updateData.featured = featured;
 

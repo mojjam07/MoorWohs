@@ -6,6 +6,7 @@ let projects = [
     description: 'Full-stack shopping experience with secure payments',
     tech: ['React', 'Node.js', 'MongoDB', 'Stripe'],
     link: '#',
+    github_link: null,
     image: null,
     featured: true
   },
@@ -15,6 +16,7 @@ let projects = [
     description: 'Collaborative project management tool',
     tech: ['React', 'Express', 'PostgreSQL', 'WebSocket'],
     link: '#',
+    github_link: null,
     image: null,
     featured: true
   },
@@ -24,6 +26,7 @@ let projects = [
     description: 'Analytics and insights platform',
     tech: ['React', 'D3.js', 'Firebase', 'Cloud Functions'],
     link: '#',
+    github_link: null,
     image: null,
     featured: true
   },
@@ -33,6 +36,7 @@ let projects = [
     description: 'WebSocket-based messaging system',
     tech: ['React', 'Socket.io', 'Redis', 'JWT'],
     link: '#',
+    github_link: null,
     image: null,
     featured: false
   },
@@ -42,6 +46,7 @@ let projects = [
     description: 'Beautiful weather visualization',
     tech: ['React', 'REST API', 'Charts', 'Geolocation'],
     link: '#',
+    github_link: null,
     image: null,
     featured: false
   },
@@ -51,6 +56,7 @@ let projects = [
     description: 'Content management system for portfolios',
     tech: ['React', 'Node.js', 'MySQL', 'AWS S3'],
     link: '#',
+    github_link: null,
     image: null,
     featured: false
   }
