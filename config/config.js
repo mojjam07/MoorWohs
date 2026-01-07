@@ -81,4 +81,30 @@ const config = {
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET
 };
 
+// Validate required Supabase keys
+const supabaseConfigValidation = () => {
+  const errors = [];
+  
+  if (!config.SUPABASE_URL) {
+    errors.push('SUPABASE_URL is not set');
+  }
+  if (!config.SUPABASE_ANON_KEY) {
+    errors.push('SUPABASE_ANON_KEY is not set');
+  }
+  if (!config.SUPABASE_SERVICE_ROLE_KEY) {
+    errors.push('SUPABASE_SERVICE_ROLE_KEY is not set - admin operations will fail due to RLS policies');
+  }
+  
+  if (errors.length > 0) {
+    console.warn('⚠️  Supabase Configuration Warnings:');
+    errors.forEach(err => console.warn(`   - ${err}`));
+    console.warn('   Set these environment variables for full functionality\n');
+  } else {
+    console.log('✓ Supabase configuration validated');
+  }
+};
+
+// Run validation on module load
+supabaseConfigValidation();
+
 module.exports = config;

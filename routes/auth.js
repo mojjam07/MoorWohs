@@ -1,5 +1,5 @@
 const express = require('express');
-const supabase = require('../db/db');
+const { supabase } = require('../db/db');
 const router = express.Router();
 
 // Register new user
