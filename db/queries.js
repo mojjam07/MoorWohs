@@ -179,6 +179,12 @@ const markContactAsRead = async (id) => {
   return data;
 };
 
+const deleteContact = async (id) => {
+  const { data, error } = await supabaseAdmin.from('contacts').delete().eq('id', id).select().single();
+  if (error) throw error;
+  return data;
+};
+
 // Stats queries
 const getStats = async () => {
   try {
@@ -220,5 +226,6 @@ module.exports = {
   createContact,
   getAllContacts,
   markContactAsRead,
+  deleteContact,
   getStats
 };

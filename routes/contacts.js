@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createContact, getAllContacts, markContactAsRead } = require('../db/queries');
+const { createContact, getAllContacts, markContactAsRead, deleteContact } = require('../db/queries');
 const authenticateToken = require('../middleware/auth');
 const { sendContactNotification } = require('../services/emailService');
 
@@ -81,6 +81,23 @@ router.patch('/:id/read', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error updating contact:', error);
     res.status(500).json({ error: 'Failed to update contact' });
+  }
+});
+
+// Delete contact (protected)
+router.delete('/:id', authenticateToken, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const deletedContact = await deleteContact(id);
+
+    if (!deletedContact) {
+      return res.status(404).json({ error: 'Contact not found' });
+    }
+
+    res.json({ message: 'Contact deleted successfully', id: deletedContact.id });
+  } catch (error) {
+    console.error('Error deleting contact:', error);
+    res.status(500).json({ error: 'Failed to delete contact' });
   }
 });
 
