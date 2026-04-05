@@ -187,15 +187,69 @@ const deleteContact = async (id) => {
   return data;
 };
 
+// Reviews queries
+const getAllReviews = async () => {
+  try {
+    const { data, error } = await supabaseAdmin.from('reviews').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching reviews from database:', error);
+    console.log('Returning empty reviews array due to DB error');
+    return [];
+  }
+};
+
+const getVerifiedReviews = async () => {
+  try {
+    const { data, error } = await supabase.from('reviews').select('*').eq('status', 'verified').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching verified reviews from database:', error);
+    return [];
+  }
+};
+
+const createReview = async (reviewData) => {
+  const { name, email, role, rating, message } = reviewData;
+  const { data, error } = await supabaseAdmin
+    .from('reviews')
+    .insert([{ name, email, role, rating, message }])
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+};
+
+const updateReview = async (id, reviewData) => {
+  const { data, error } = await supabaseAdmin
+    .from('reviews')
+    .update(reviewData)
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+};
+
+const deleteReview = async (id) => {
+  const { data, error } = await supabaseAdmin.from('reviews').delete().eq('id', id).select().single();
+  if (error) throw error;
+  return data;
+};
+
 // Stats queries
 const getStats = async () => {
   try {
-    const [totalProjectsResult, featuredProjectsResult, totalSkillsResult, totalContactsResult, unreadContactsResult] = await Promise.all([
+const [totalProjectsResult, featuredProjectsResult, totalSkillsResult, totalContactsResult, unreadContactsResult, totalReviewsResult, pendingReviewsResult] = await Promise.all([
       supabaseAdmin.from('projects').select('*', { count: 'exact', head: true }),
       supabaseAdmin.from('projects').select('*', { count: 'exact', head: true }).eq('featured', true),
       supabaseAdmin.from('skills').select('*', { count: 'exact', head: true }),
       supabaseAdmin.from('contacts').select('*', { count: 'exact', head: true }),
-      supabaseAdmin.from('contacts').select('*', { count: 'exact', head: true }).eq('read', false)
+      supabaseAdmin.from('contacts').select('*', { count: 'exact', head: true }).eq('read', false),
+      supabaseAdmin.from('reviews').select('*', { count: 'exact', head: true }),
+      supabaseAdmin.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'pending')
     ]);
 
     return {
@@ -204,7 +258,9 @@ const getStats = async () => {
       totalSkills: totalSkillsResult.count || 0,
       skillsByCategory: {}, // Stats page doesn't need this breakdown
       totalContacts: totalContactsResult.count || 0,
-      unreadContacts: unreadContactsResult.count || 0
+      unreadContacts: unreadContactsResult.count || 0,
+      totalReviews: totalReviewsResult.count || 0,
+      pendingReviews: pendingReviewsResult.count || 0
     };
   } catch (error) {
     console.error('Error fetching stats from database:', error);
@@ -236,5 +292,10 @@ module.exports = {
   getAllContacts,
   markContactAsRead,
   deleteContact,
+  getAllReviews,
+  getVerifiedReviews,
+  createReview,
+  updateReview,
+  deleteReview,
   getStats
 };

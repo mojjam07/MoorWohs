@@ -15,6 +15,7 @@ const skillRoutes = require('./routes/skills');
 const contactRoutes = require('./routes/contacts');
 const statRoutes = require('./routes/stats');
 const uploadRoutes = require('./routes/uploads');
+const reviewsRoutes = require('./routes/reviews');
 const authRoutes = require('./routes/auth');
 
 const app = express();
@@ -69,6 +70,7 @@ app.use('/api/contact', contactLimiter, contactRoutes);
 app.use('/api/contacts', contactRoutes); // Admin routes
 app.use('/api/stats', statRoutes);
 app.use('/api/uploads', uploadRoutes);
+app.use('/api/reviews', reviewsRoutes);
 app.use('/api/auth', authRoutes);
 
 // 404 handler

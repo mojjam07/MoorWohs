@@ -27,6 +27,18 @@ CREATE TABLE IF NOT EXISTS contacts (
   read BOOLEAN DEFAULT FALSE
 );
 
+-- Create reviews table
+CREATE TABLE IF NOT EXISTS reviews (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  role VARCHAR(20) NOT NULL CHECK (role IN ('student', 'client')),
+  rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  message TEXT NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'verified', 'rejected')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
@@ -53,6 +65,9 @@ CREATE POLICY "Public read access skills" ON skills FOR SELECT USING (true);
 
 ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read access contacts" ON contacts FOR SELECT USING (true);
+
+ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read verified reviews" ON reviews FOR SELECT USING (status = 'verified');
 
 -- Note: Admin writes use service role key to bypass RLS
 -- Users table RLS managed separately for auth
