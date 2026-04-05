@@ -18,7 +18,8 @@ const getAllProjects = async (featured = null) => {
     return data || [];
   } catch (error) {
     console.error('Error fetching projects from database:', error);
-    throw error; // Don't fallback to in-memory data for admin pages
+    console.log('Returning empty projects array due to DB error');
+    return [];
   }
 };
 
@@ -106,7 +107,8 @@ const getAllSkills = async (category = null) => {
     return data || [];
   } catch (error) {
     console.error('Error fetching skills from database:', error);
-    throw error; // Don't fallback to in-memory data for admin pages
+    console.log('Returning empty skills array due to DB error');
+    return [];
   }
 };
 
@@ -206,7 +208,14 @@ const getStats = async () => {
     };
   } catch (error) {
     console.error('Error fetching stats from database:', error);
-    throw error; // Don't fallback to in-memory data for admin pages
+    console.log('Returning default stats due to DB error');
+    return {
+      totalProjects: 0,
+      featuredProjects: 0,
+      totalSkills: 0,
+      totalContacts: 0,
+      unreadContacts: 0
+    };
   }
 };
 

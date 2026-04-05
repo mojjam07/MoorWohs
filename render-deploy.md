@@ -46,9 +46,12 @@ In your Render web service settings, add the following environment variables:
   - Get this from Supabase Settings > Database > Connection string
   - Replace `[PASSWORD]` with your actual database password
 
-### Supabase Configuration
+### Supabase Configuration **(CRITICAL for API to work)**
 - `SUPABASE_URL`: The Project URL from your Supabase project (e.g., `https://your-project-id.supabase.co`)
-- `SUPABASE_ANON_KEY`: The anon public key from your Supabase project
+- `SUPABASE_ANON_KEY`: The **anon public** key from Supabase Settings > API
+- `SUPABASE_SERVICE_ROLE_KEY`: The **service_role** key from Supabase Settings > API **(REQUIRED for admin operations to bypass RLS policies)**
+
+**Important**: After setting env vars, run the migration (`backend/db/migrate.js`) or paste backend/db/schema.sql into Supabase SQL Editor to create tables + RLS policies.
 
 ### Authentication
 - `JWT_SECRET`: A secure random string for JWT signing

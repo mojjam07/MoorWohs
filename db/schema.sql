@@ -43,3 +43,16 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
   expires_at TIMESTAMP NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Enable RLS and create public read policies
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read access projects" ON projects FOR SELECT USING (true);
+
+ALTER TABLE skills ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read access skills" ON skills FOR SELECT USING (true);
+
+ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read access contacts" ON contacts FOR SELECT USING (true);
+
+-- Note: Admin writes use service role key to bypass RLS
+-- Users table RLS managed separately for auth
